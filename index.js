@@ -2,13 +2,18 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const PORT = 3000;
+const PORT = 4000;
 const http = require("http");
 const Wallet = require("ethereumjs-wallet");
 const Web3 = require("web3");
 const server = http.createServer(app);
 const {ethers,JsonRpcProvider , formatEther, parseUnits, isAddress, ContractTransactionResponse, InfuraProvider} = require("ethers");
 const { EthHdWallet, generateMnemonic } = require("eth-hd-wallet");
+
+app.get('/', (req, res) => {
+  res.send('Hello, your Node.js API is running!');
+});
+
 
 const HttpProvider =
   "https://eth-mainnet.g.alchemy.com/v2/3iz35aSwwC5nbTT9SyTmJ0WM916nuv70";
@@ -39,7 +44,7 @@ app.use(
 //   res.send({ wallet });
 // });
 
-app.post("/import-wallet",async (req, res) => {
+app.get("/import-wallet",async (req, res) => {
   var privateKey = req.body.privateKey;
   privateKey = "0x".concat(privateKey);
   if (ethers.isHexString(privateKey, 32)) {
@@ -86,7 +91,7 @@ app.post("/import-wallet",async (req, res) => {
   }
 });
 
-app.post("/generate-wallet",async (req, res) => {
+app.get("/generate-wallet",async (req, res) => {
   const wallet =await ethers.Wallet.createRandom();
   console.log("Wallet Address:", wallet);
   console.log("Private key:", wallet.privateKey);
@@ -103,26 +108,27 @@ app.post("/generate-wallet",async (req, res) => {
   res.status(200).send(result)
 });
 
-app.post("/network-wallet", async (req, res) => {
+app.get("/network-wallet", async (req, res) => {
   const privateKey = "0x06cfe268e737bda2e3fc4ef07603b6ff6b74ce7f9671b81dd43bccc5fb9f8a93"
   const provider = new JsonRpcProvider("https://rpc.ankr.com/eth_goerli");
   const wallet = new ethers.Wallet(privateKey, provider);
   const balance = await provider.getBalance(wallet.address);
   console.log("balance "+balance)
   console.log("balance convert "+formatEther(balance))
+  res.json({ balance: formatEther(balance) }); // Send the balance to the browser
   //console.log("Balance:", ethers.utils.format(balance));
   // console.log("Private key:", wallet.privateKey);
   // console.log("Address:", wallet.address);
   res.end()
 });
 
-app.post("/token-wallet", async (req, res) => {
+app.get("/token-wallet", async (req, res) => {
   var privateKey = req.body.privateKey;
   privateKey = "0x".concat(privateKey);
   const provider = new JsonRpcProvider("https://bsc-dataseed.binance.org/");
   const wallet = new ethers.Wallet(privateKey, provider);
    // Define the contract ABI
-   const abi = require("./contract.json")
+   const abi = require("../contract.json")
 
   // Create a contract instance
   try {
@@ -161,14 +167,14 @@ app.post("/token-wallet", async (req, res) => {
   res.end()
 });
 
-app.post("/token-walletf3", async (req, res) => {
+app.get("/token-walletf3", async (req, res) => {
   var privateKey = req.body.privateKey;
   privateKey = "0x".concat(privateKey);
   if(privateKey){
   const provider = new JsonRpcProvider("https://bsc-dataseed.binance.org/");
   const wallet = new ethers.Wallet(privateKey, provider);
    // Define the contract ABI
-   const abi = require("./contract.json")
+   const abi = require("../contract.json")
 
   // Create a contract instance
   try {
@@ -213,7 +219,7 @@ else{
 
 /////////////transfer function
 
-app.post("/transfertoken", async (req, res) => {
+app.get("/transfertoken", async (req, res) => {
   //var privateKey = req.body.privateKey;
   //"0x7Aff2d0B67FE9Ebb842aE9F3255DFfca0E02448c"
   //"0x06cfe268e737bda2e3fc4ef07603b6ff6b74ce7f9671b81dd43bccc5fb9f8a93"
@@ -226,7 +232,7 @@ app.post("/transfertoken", async (req, res) => {
   privateKey = "0x".concat(privateKey)
   console.log("privateKey "+privateKey)
   
-  const abi = require("./contract.json")
+  const abi = require("../contract.json")
 
 const provider = new JsonRpcProvider("https://bsc-dataseed.binance.org/"); // Connect to Ropsten testnet
 const wallet = new ethers.Wallet(privateKey, provider);
@@ -258,7 +264,7 @@ else{
 
 /////////////////////////////////////////////////
 
-app.post("/transfertokenusdt", async (req, res) => {
+app.get("/transfertokenusdt", async (req, res) => {
   //var privateKey = req.body.privateKey;
   //"0x7Aff2d0B67FE9Ebb842aE9F3255DFfca0E02448c"
   //"0x06cfe268e737bda2e3fc4ef07603b6ff6b74ce7f9671b81dd43bccc5fb9f8a93"
@@ -271,7 +277,7 @@ app.post("/transfertokenusdt", async (req, res) => {
   privateKey = "0x".concat(privateKey)
   console.log("privateKey "+privateKey)
   
-  const abi = require("./contract.json")
+  const abi = require("../contract.json")
 
 const provider = new JsonRpcProvider("https://bsc-dataseed.binance.org/"); 
 const wallet = new ethers.Wallet(privateKey, provider);
@@ -293,13 +299,13 @@ else{
 }
 });
 
-app.post("/swaptoken", async (req, res) => {
+app.get("/swaptoken", async (req, res) => {
   //var privateKey = req.body.privateKey;
   var receiptAddress = "0x7Aff2d0B67FE9Ebb842aE9F3255DFfca0E02448c"
   var amount = '50'
   var CONTRACT_ADDRESS = "0x5828bE076e42216050FC11DfECD8598232043b19"
   const privateKey = "0x06cfe268e737bda2e3fc4ef07603b6ff6b74ce7f9671b81dd43bccc5fb9f8a93"
-  const abi = require("./contract.json")
+  const abi = require("../contract.json")
 
 const provider = new JsonRpcProvider("https://bsc-testnet.public.blastapi.io"); // Connect to Ropsten testnet
 const wallet = new ethers.Wallet(privateKey, provider);
