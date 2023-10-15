@@ -44,7 +44,7 @@ app.use(
 //   res.send({ wallet });
 // });
 
-app.post("/import-wallet",async (req, res) => {
+app.get("/import-wallet",async (req, res) => {
   var privateKey = req.body.privateKey;
   privateKey = "0x".concat(privateKey);
   if (ethers.isHexString(privateKey, 32)) {
